@@ -31,7 +31,7 @@ spec:
             - name: DNS2
               value: 8.8.8.8
             - name: FTLCONF_LOCAL_IPV4
-              value: <IP_DEL_NODO_USRV>  # Reemplaza esto manualmente
+              value: <IP_DEL_NODO_>  # Reemplaza esto manualmente
           ports:
             - containerPort: 53
               hostPort: 53
