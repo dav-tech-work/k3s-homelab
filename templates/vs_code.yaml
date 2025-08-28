@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: code-server
+  namespace: default
+  labels:
+    app: code-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: code-server
+  template:
+    metadata:
+      labels:
+        app: code-server
+    spec:
+      containers:
+        - name: code-server
+          image: lscr.io/linuxserver/code-server:latest
+          ports:
+            - containerPort: 8443
+              protocol: TCP
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Madrid
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+            - name: proyectos-volume
+              mountPath: /montada # Path de la carpeta dentro del contenedor
+            
+      volumes:
+        - name: config-volume
+          hostPath:
+            path: ./code-server/config
+            type: DirectoryOrCreate
+        - name: proyectos-volume
+          hostPath:
+            path: ./docker # Path de la carpeta local
+            type: DirectoryOrCreate
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: code-server-service
+  namespace: default
+  labels:
+    app: code-server
+spec:
+  type: NodePort
+  selector:
+    app: code-server
+  ports:
+    - name: https
+      protocol: TCP
+      port: 8443
+      targetPort: 8443
+      nodePort: 32000
